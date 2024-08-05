@@ -1,0 +1,62 @@
+= Parksmap application
+This application is a frontend web and gateway to backend services that provide geolocation data on services
+
+
+== Backends
+Backend services require to have an specific annotation to be discovered:
+
+Discovered back-ends are listed at this endpoint:
+----
+curl -i /ws/backends/list
+----
+
+Note: As the application needs to interact with openshift's API, you'll need to provide some permissions to the default ServiceAccount for that.
+
+
+----
+type: parksmap-backend
+----
+
+Every backend should provide an endpoint located at */ws/info* that will provide link:src/main/java/com/openshift/evg/roadshow/rest/gateway/model/Backend.java[Backend] information.
+
+Here you can find 2 sample implementations:
+
+* Springboot:
+
+[source,java]
+----
+@RequestMapping("/ws/info")
+@RestController
+public class BackendController{
+
+    @RequestMapping(method = RequestMethod.GET, value = "/", produces = "application/json")
+    public Backend get() {
+        return new Backend(....);
+    }
+}
+----
+
+* JEE:
+
+[source,java]
+----
+@Path("/ws/info")
+public class BackendController{
+    @GET
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Backend get() {
+        return new Backend(....);
+    }
+}
+----
+
+
+== Run it
+To run the application, you should just:
+
+----
+mvn clean install spring-boot:run
+----
+
+
